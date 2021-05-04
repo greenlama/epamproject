@@ -2,7 +2,7 @@
 // $start_time = microtime(true);
 //include 'releaseyears.php';
 
-$servname = "localhost";
+$servname = "192.168.16.1:3306";
 $user = "user";
 $password = "Password1_";
 $database = "itunes_database";

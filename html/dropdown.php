@@ -1,6 +1,6 @@
 <?php
 
-$servname = "localhost";
+$servname = "192.168.16.1:3306";
 $user = "user";
 $password = "Password1_";
 $database = "itunes_database";
@@ -13,7 +13,7 @@ $readdata = $conn->query($dropdownquery);
 echo "<form>"; 
 echo "<select name='years' class='years'>";
 echo "<option value='blank' disabled selected>", '---', "</option>";
-echo "<option value='All'>", All, "</option>";
+echo "<option value='All'>", 'All', "</option>";
 while($dropdownrow = $readdata->fetch_assoc()) {
     echo "<option value='" . $dropdownrow['releaseDate'] . "'>" . $dropdownrow['releaseDate'] . "</option>";
 }
