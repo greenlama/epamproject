@@ -1,6 +1,6 @@
 <?php
 
-$servname = "localhost";
+$servname = "192.168.16.1:3306";
 $user = "user";
 $password = "Password1_";
 $database = "itunes_database";
@@ -17,9 +17,9 @@ if ($readdata->num_rows > 0) {
   echo "<table border='0' cellspacing='5' cellpadding='2'><tr><th>Тип</th><th>Альбом</th><th>Песня</th><th>Стоимость альбома</th><th>Стоимость песни</th>
         <th>Жанр</th><th>Количество песен</th><th>Номер песни</th><th>Дата релиза</th></tr>";
   while($row = $readdata->fetch_assoc()) {
-            $albumprice = $row[collectionPrice];
+            $albumprice = $row['collectionPrice'];
             if ($albumprice == -1.00) {$albumprice = '';}
-            $songprice = $row[trackPrice];
+            $songprice = $row['trackPrice'];
             if ($songprice == -1.00) {$songprice = '';}
             echo "<tr><td>".$row["kind"]."</td><td>".$row["collectionName"]."</td><td>".$row["trackName"]."</td><td>",$albumprice,"</td>
             <td>",$songprice,"</td><td>".$row["primaryGenreName"]."</td><td>".$row["trackCount"]."</td>
