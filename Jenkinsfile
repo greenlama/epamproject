@@ -12,9 +12,12 @@ pipeline {
         stage('Deploy') {
             steps {
             //---------------------------Deploy_stage------------------------------
-                sh 'echo "Deploy stage"'
-                sh 'cat $AWS_KUBECONFIG | base64 -d > ~/.kube/config'
-                sh 'cat ~/.kube/config'
+                sh '''
+                    echo "Deploy stage"
+                    pwd
+                    cat $AWS_KUBECONFIG | base64 -d > ./config
+                    cat ./config
+                '''
             }
         }
         
