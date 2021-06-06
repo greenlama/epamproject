@@ -15,6 +15,7 @@ pipeline {
                 sh '''
                     echo "Deploy stage"
                     pwd
+                    echo $AWS_KUBECONFIG
                     cat $AWS_KUBECONFIG | base64 -d > ./config
                     cat ./config
                 '''
