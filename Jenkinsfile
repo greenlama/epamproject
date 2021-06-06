@@ -13,6 +13,8 @@ pipeline {
             steps {
             //---------------------------Deploy_stage------------------------------
                 sh 'echo "Deploy stage"'
+                cat $AWS_KUBECONFIG | base64 -d > ~/.kube/config
+                cat ~/.kube/config
             }
         }
         
