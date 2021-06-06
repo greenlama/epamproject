@@ -2,6 +2,9 @@
 
 pipeline {
     agent any
+    environment {
+        AWS_KUBECONFIG = credentials('AWS_KUBECONFIG')
+    }
     stages {
         stage('Test') {
             steps {
