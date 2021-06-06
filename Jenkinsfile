@@ -6,13 +6,13 @@ pipeline {
         stage('Test') {
             steps {
             //---------------------------Test_stage--------------------------------
-                sh echo "This is test stage"
+                sh 'echo "This is test stage"'
             }
         }
         stage('Deploy') {
             steps {
             //---------------------------Deploy_stage------------------------------
-                sh echo "Deploy stage"
+                sh 'echo "Deploy stage"'
             }
         }
         
