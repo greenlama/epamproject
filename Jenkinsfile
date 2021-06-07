@@ -13,14 +13,18 @@ pipeline {
             }
         }
         stage('Deploy') {
+            agent { 
+                docker { 
+                    image 'docker pull bitnami/kubectl'
+                    args '-u root:root'
+                } 
+            }
             steps {
             //---------------------------Deploy_stage------------------------------
                 sh '''
-                    echo "Deploy stage"
-                    pwd
-                    echo $AWS_KUBECONFIG
-                    echo $AWS_KUBECONFIG | base64 -d > ./config
-                    cat ./config
+                    echo $AWS_KUBECONFIG | base64 -d > ./aws_config
+                    KUBECONFIG=./aws_config
+                    kubectl get pods -n cicd
                 '''
             }
         }
