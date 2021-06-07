@@ -13,12 +13,12 @@ pipeline {
             }
         }
         stage('Deploy') {
-            agent { 
-                docker { 
-                    image 'docker pull bitnami/kubectl'
-                    args '-u root:root'
-                } 
-            }
+            //agent { 
+            //    docker { 
+            //        image 'docker pull bitnami/kubectl'
+            //        args '-u root:root'
+            //    } 
+          //  }
             steps {
             //---------------------------Deploy_stage------------------------------
                 sh '''
