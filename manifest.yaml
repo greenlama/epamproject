@@ -1,0 +1,117 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pinkfloyd
+  labels:
+    app: pinkfloyd
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: pinkfloyd
+  template:
+    metadata:
+      labels:
+        app: pinkfloyd
+    spec:
+      volumes:
+        - name: shared-files
+          emptyDir: {}
+        - name: nginx-config-volume
+          configMap:
+            name: nginx-config
+        - name: sa-secret-volume
+          secret:
+            secretName: gcp-sa
+      containers:
+      - name: php
+        image: eu.gcr.io/epam-project-316707/cicd_app:__TAG__
+        env:
+        - name: DB_USER
+          valueFrom:
+            secretKeyRef:
+              name: db-user
+              key: db_user
+        - name: DB_PASS
+          valueFrom:
+            secretKeyRef:
+              name: db-password
+              key: db_password
+        - name: DB_NAME
+          valueFrom:
+            secretKeyRef:
+              name: db-name
+              key: db_name
+        volumeMounts:
+        - name: shared-files
+          mountPath: /var/www/html
+        lifecycle:
+          postStart:
+            exec:
+              command: ["/bin/sh", "-c", "cp -r /app/. /var/www/html"]
+      - image: nginx:1.20.0-alpine
+        name: nginx
+        volumeMounts:
+        - name: shared-files
+          mountPath: /var/www/html
+        - name: nginx-config-volume
+          mountPath: /etc/nginx/nginx.conf
+          subPath: nginx.conf
+      - name: cloud-sql-proxy
+        image: gcr.io/cloudsql-docker/gce-proxy:1.17
+        command:
+          - "/cloud_sql_proxy"
+          - "-instances=epam-project-316707:europe-north1:mysql-dev=tcp:3306"
+          - "-credential_file=/secrets/service_account.json"
+        securityContext:
+          runAsNonRoot: true
+        volumeMounts:
+        - name: sa-secret-volume
+          mountPath: /secrets/
+          readOnly: true
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: pinkfloyd
+spec:
+  type: LoadBalancer
+  selector:
+    app: pinkfloyd
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+---
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: nginx-config
+data:
+  nginx.conf: |
+    events {
+    }
+    http {
+      server {
+        listen 80 default_server;
+        listen [::]:80 default_server;
+        
+        # Set nginx to serve files from the shared volume!
+        root /var/www/html;
+        index index.php index.html;
+        server_name _;
+        location / {
+          try_files $uri $uri/ =404;
+        }
+        location ~ \.php$ {
+          try_files $uri =404;
+          fastcgi_split_path_info ^(.+\.php)(/.+)$;
+          include fastcgi_params;
+          fastcgi_index index.php;
+          fastcgi_param REQUEST_METHOD $request_method;
+          fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+          fastcgi_param PATH_INFO $fastcgi_path_info;
+          fastcgi_pass 127.0.0.1:9000;
+        }
+      }
+    }

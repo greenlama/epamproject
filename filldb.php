@@ -2,10 +2,10 @@
 // $start_time = microtime(true);
 //include 'releaseyears.php';
 
-$servname = "192.168.16.1:3306";
-$user = "user";
-$password = "Password1_";
-$database = "itunes_database";
+$servname = "127.0.0.1:3306";
+$user = getenv('DB_USER');
+$password = getenv('DB_PASS');
+$database = getenv('DB_NAME');
 //$yearstable = "release_years";
 $table = "pink_floyd";
 $columns = "kind, collectionName, trackName, collectionPrice, trackPrice, primaryGenreName, trackCount, trackNumber, releaseDate";
