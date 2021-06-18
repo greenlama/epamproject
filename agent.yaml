@@ -1,0 +1,30 @@
+metadata:
+  labels:
+    some-label: pod-runner
+spec:
+  containers:
+  - name: jnlp
+    env:
+    - name: CONTAINER_ENV_VAR
+      value: jnlp
+    - name: JENKINS_URL
+      value: http://jenkins
+  - name: kubectl
+    image: gcr.io/cloud-builders/kubectl
+    command:
+    - cat
+    tty: true
+  - name: docker
+    image: docker:19.03.13-dind
+    command:
+    - dockerd
+    args:
+    - --host=unix:///var/run/docker.sock
+    - --storage-driver=overlay
+    - --insecure-registry
+    - nexus:8086
+    - --insecure-registry
+    - nexus:8087
+    tty: true
+    securityContext:
+      privileged: true

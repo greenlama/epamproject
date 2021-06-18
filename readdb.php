@@ -1,18 +1,17 @@
 <?php
-if(isset($_POST["years"])){
-$year = $_POST["years"];
 
-
-if($year !== 'All'){
-$servname = "192.168.16.1:3306";
-$user = "user";
-$password = "Password1_";
-$database = "itunes_database";
+$servname = "127.0.0.1:3306";
+$user = getenv('DB_USER');
+$password = getenv('DB_PASS');
+$database = getenv('DB_NAME');
+$yearstable = "release_years";
 $table = "pink_floyd";
 $columns = "kind, collectionName, trackName, collectionPrice, trackPrice, primaryGenreName, trackCount, trackNumber, releaseDate";
+$albumcolumn = "collectionId";
+$releasecolumn = "releaseDate";
 
 $conn = new mysqli($servname, $user, $password, $database);
-$readquery = "SELECT $columns FROM $table WHERE releaseDate = $year ORDER BY trackPrice DESC";
+$readquery = "SELECT $columns FROM $table ORDER BY trackPrice DESC";
 $readdata = $conn->query($readquery);
 if ($readdata->num_rows > 0) {
   echo "<table border='0' cellspacing='5' cellpadding='2'><tr><th>Тип</th><th>Альбом</th><th>Песня</th><th>Стоимость альбома</th><th>Стоимость песни</th>
@@ -27,10 +26,9 @@ if ($readdata->num_rows > 0) {
             <td>".$row["trackNumber"]."</td><td>".$row["releaseDate"]."</td></tr>";
   }
   echo "</table>";
-} 
-$conn->close();
 } else {
-    include 'readdb.php';
+    echo "0 results";
 }
-}
+$conn->close();
+
 ?>

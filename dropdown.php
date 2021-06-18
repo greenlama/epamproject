@@ -1,9 +1,9 @@
 <?php
 
-$servname = "192.168.16.1:3306";
-$user = "user";
-$password = "Password1_";
-$database = "itunes_database";
+$servname = "127.0.0.1:3306";
+$user = getenv('DB_USER');
+$password = getenv('DB_PASS');
+$database = getenv('DB_NAME');
 $table = "pink_floyd";
 
 $conn = new mysqli($servname, $user, $password, $database);
