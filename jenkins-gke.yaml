@@ -1,0 +1,73 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: cicd
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: jenkins-data
+  namespace: cicd
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 4Gi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: jenkins
+  namespace: cicd
+  labels:
+    app: jenkins
+spec:
+  selector:
+    matchLabels:
+      app: jenkins
+  template:
+    metadata:
+      labels:
+        app: jenkins
+    spec:
+      serviceAccountName: jenkins
+      initContainers:
+      - name: init
+        image: busybox:latest
+        command: ['/bin/chown', '1000:1000', '/jenkins-data']
+        volumeMounts:
+        - name: jenkins-data
+          mountPath: /jenkins-data
+      containers:
+      - image: jenkins/jenkins:2.249.2-alpine
+        name: jenkins
+        volumeMounts:
+        - name: jenkins-data
+          mountPath: /var/jenkins_home
+        ports:
+        - containerPort: 8080
+        - containerPort: 50000
+      volumes:
+      - name: jenkins-data
+        persistentVolumeClaim:
+          claimName: jenkins-data
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: jenkins
+  namespace: cicd
+spec:
+  type: LoadBalancer
+  selector:
+    app: jenkins
+  ports:
+    - name: http
+      protocol: TCP
+      port: 80
+      targetPort: 8080
+    - name: api
+      protocol: TCP
+      port: 50000
+      targetPort: 50000
