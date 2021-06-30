@@ -5,7 +5,15 @@ metadata:
   labels:
     app: pinkfloyd
 spec:
-  replicas: 1
+  replicas: 3
+  selector:
+    matchLabels:
+      deployment: pinkfloyd
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+    type: RollingUpdate
   selector:
     matchLabels:
       app: pinkfloyd
@@ -49,6 +57,12 @@ spec:
           postStart:
             exec:
               command: ["/bin/sh", "-c", "cp -r /app/. /var/www/html"]
+        resources:
+          limits:
+            memory: 40Mi
+          requests:
+            cpu: "10m"
+            memory: 20Mi
       - image: nginx:1.20.0-alpine
         name: nginx
         volumeMounts:
@@ -57,6 +71,12 @@ spec:
         - name: nginx-config-volume
           mountPath: /etc/nginx/nginx.conf
           subPath: nginx.conf
+        resources:
+          limits:
+            memory: 40Mi
+          requests:
+            cpu: "10m"
+            memory: 20Mi
       - name: cloud-sql-proxy
         image: gcr.io/cloudsql-docker/gce-proxy:1.17
         command:
@@ -69,6 +89,12 @@ spec:
         - name: sa-secret-volume
           mountPath: /secrets/
           readOnly: true
+        resources:
+          limits:
+            memory: 40Mi
+          requests:
+            cpu: "10m"
+            memory: 20Mi
 ---
 apiVersion: v1
 kind: Service
@@ -115,3 +141,29 @@ data:
         }
       }
     }
+---
+apiVersion: autoscaling/v2beta2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: autoscale
+spec:
+  maxReplicas: 4
+  minReplicas: 2
+  behavior:
+    scaleDown:
+      stabilizationWindowSeconds: 30
+      policies:
+      - type: Percent
+        value: 50
+        periodSeconds: 15
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: pinkfloyd
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 80

@@ -3,6 +3,16 @@ metadata:
     some-label: pod-runner
 spec:
   containers:
+  - name: sonar
+    image: sonarsource/sonar-scanner-cli:latest
+    command:
+    - cat
+    tty: true
+    env:
+      - name: SONAR_HOST_URL
+        value: http://34.88.232.227:9000
+      - name: SONAR_LOGIN
+        value: ${sonar_login}
   - name: jnlp
     env:
     - name: CONTAINER_ENV_VAR
