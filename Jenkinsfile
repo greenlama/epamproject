@@ -47,7 +47,7 @@ pipeline {
     }
     stage ('Deploy to DEV') {
      when { 
-      branch 'dev'
+      branch not 'master'
      }
      steps {
        container('kubectl') {
