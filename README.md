@@ -26,3 +26,5 @@ A short presentation (.ppt or other) which contains description of the solution 
 The working application with the pipeline is to be demonstrated live on a “protection of the diploma” session for experts with comments and explanation of the details of the implementation, reasons of choosing tools and technologies.
 
 You can choose any cloud provider taking into account possible extra costs for the resources. As an example, you can use 3-workers node configuration with 1 CPU/8GB on each one in GCP under free tier.
+
+Ссылка на презентацию: https://docs.google.com/presentation/d/17AtyhbZ8bD7-yabQ4mUlUiY7w3gEjl7cxjqmBfpgwvo/edit?usp=sharing
